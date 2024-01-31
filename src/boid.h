@@ -2,7 +2,7 @@
 
 #include <span>
 
-#include "p6/p6.h"
+#include "glm/glm.hpp"
 
 class Boid {
 public :
@@ -11,6 +11,7 @@ public :
 
     float speed;
     float detectionRadius;
+    float dodgeRadius;
 
     void update(std::span<Boid> crowd);
 };

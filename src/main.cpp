@@ -24,8 +24,8 @@ int main()
         boid = Boid {
             .position = p6::random::point(),
             .direction = p6::random::point(),
-            .speed = 0.002,
-            .detectionRadius = .3
+            .speed = 0.006,
+            .detectionRadius = .2
         };
     }
 
@@ -41,10 +41,10 @@ int main()
         ctx.background(p6::NamedColor::Blue);
         for (Boid &boid : crowd) {
             boid.update(std::span(crowd));
-            if (boid.position.x < -1) boid.position.x = -1;
-            if (boid.position.x >  1) boid.position.x =  1;
-            if (boid.position.y < -1) boid.position.y = -1;
-            if (boid.position.y >  1) boid.position.y =  1;
+            if (boid.position.x < -1) boid.position.x =  0.99;
+            if (boid.position.x >  1) boid.position.x = -0.99;
+            if (boid.position.y < -1) boid.position.y =  0.99;
+            if (boid.position.y >  1) boid.position.y = -0.99;
         }
         for (Boid const &boid : crowd) {
             ctx.circle(
