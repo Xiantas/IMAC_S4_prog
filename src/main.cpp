@@ -24,7 +24,7 @@ int main()
         boid = Boid {
             .position = p6::random::point(),
             .direction = p6::random::point(),
-            .speed = 0.006,
+            .speed = 0.015,
             .detectionRadius = .2,
             .dodgeRadius = .1,
         };

@@ -23,11 +23,11 @@ void Boid::update(std::span<Boid> crowd) {
 
     auto massSteer = glm::normalize(massCenter/count - this->position);
     averageDir = glm::normalize(averageDir);
-    repulsion = glm::normalize(repulsion);
+    repulsion = repulsion/count;
 
     auto redirect = glm::normalize(massSteer + 1.5f * averageDir + repulsion);
 
-    auto new_dir = this->direction + 0.3f * glm::normalize(-3.5f * this->direction + redirect);
+    auto new_dir = glm::normalize(this->direction + 0.1f * glm::normalize(-3.5f * this->direction + redirect));
 
     this->direction = glm::length(new_dir) > 0 ? new_dir : this->direction;
     this->position += speed * this->direction;
