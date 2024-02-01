@@ -25,7 +25,8 @@ int main()
             .position = p6::random::point(),
             .direction = p6::random::point(),
             .speed = 0.006,
-            .detectionRadius = .2
+            .detectionRadius = .2,
+            .dodgeRadius = .1,
         };
     }
 
