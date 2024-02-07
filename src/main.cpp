@@ -10,7 +10,7 @@
 #include "boid.h"
 #include <iostream>
 
-constexpr size_t N = 50;
+constexpr size_t N = 100;
 
 int main()
 {
@@ -24,9 +24,9 @@ int main()
         boid = Boid {
             .position = p6::random::point(),
             .direction = p6::random::point(),
-            .speed = 0.015,
-            .detectionRadius = .2,
-            .dodgeRadius = .1,
+            .speed = 0.0045,
+            .detectionRadius = .25,
+            .dodgeRadius = .13,
         };
     }
 
@@ -39,7 +39,7 @@ int main()
         if (ctx.mouse_button_is_pressed(p6::Button::Left)) {
             std::cout << '(' << ctx.mouse().x << ", " << ctx.mouse().y << ")\n";
         }
-        ctx.background(p6::NamedColor::Blue);
+        ctx.background(p6::NamedColor::Wheat);
         for (Boid &boid : crowd) {
             boid.update(std::span(crowd));
             if (boid.position.x < -1) boid.position.x =  0.99;
@@ -48,9 +48,9 @@ int main()
             if (boid.position.y >  1) boid.position.y = -0.99;
         }
         for (Boid const &boid : crowd) {
-            ctx.circle(
+            ctx.equilateral_triangle(
                 p6::Center{boid.position},
-                p6::Radius{0.03f}
+                p6::Radius{0.020f}
             );
         }
     };
