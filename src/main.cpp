@@ -18,17 +18,16 @@ int main()
     if (doctest::Context{}.run() != 0)
         return EXIT_FAILURE;
 
-    std::vector<Boid> crowd;
-    crowd.resize(N);
-    for (Boid &boid : crowd) {
-        boid = Boid {
-            .position = p6::random::point(),
-            .direction = p6::random::point(),
-            .speed = 0.0045,
-            .detectionRadius = .25,
-            .dodgeRadius = .13,
-        };
-    }
+    std::vector<Boid> crowd(N);
+        for (Boid &boid : crowd) {
+            boid = Boid {
+                .position = p6::random::point(),
+                .direction = p6::random::point(),
+                .speed = 0.0047,
+                .detectionRadius = .25,
+                .dodgeRadius = .13,
+            };
+        }
 
     // Actual application code
     auto ctx = p6::Context{{.title = "Simple-p6-Setup"}};
