@@ -42,10 +42,42 @@ target_link_libraries(${PROJECT_NAME} PRIVATE doctest::doctest)
 
 # ---Add p6 library---
 # set(P6_RAW_OPENGL_MODE ON CACHE BOOL "") # You need to press F1 and use "CMake: Delete Cache and Reconfigure" when enabling this option.
+#FetchContent_Declare(
+#    p6
+#    GIT_REPOSITORY https://github.com/julesfouchy/p6
+#    GIT_TAG c962f8c5f3bf8324482facaf2ec178ef4c9aefaa
+#)
+#FetchContent_MakeAvailable(p6)
+#target_link_libraries(${PROJECT_NAME} PRIVATE p6::p6)
+
+# ---Windowing---
 FetchContent_Declare(
-    p6
-    GIT_REPOSITORY https://github.com/julesfouchy/p6
-    GIT_TAG c962f8c5f3bf8324482facaf2ec178ef4c9aefaa
+    glfw
+    GIT_REPOSITORY https://github.com/glfw/glfw
+    GIT_TAG 76227fa5192e497d6c1417bb607d2f49e857061d
 )
-FetchContent_MakeAvailable(p6)
-target_link_libraries(${PROJECT_NAME} PRIVATE p6::p6)
+FetchContent_MakeAvailable(glfw)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
+
+# ---glm---
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm
+    GIT_TAG 33b0eb9fa336ffd8551024b1d2690e418014553b
+)
+FetchContent_MakeAvailable(glm)
+target_link_libraries(${PROJECT_NAME} PRIVATE glm)
+
+# ---exe_path---
+FetchContent_Declare(
+    exe_path
+    GIT_REPOSITORY https://github.com/CoolLibs/exe_path
+    GIT_TAG 198dd0c2a077ffaed5ecbe9f45b9836e8b3c9fc7
+)
+FetchContent_MakeAvailable(exe_path)
+target_link_libraries(${PROJECT_NAME} PRIVATE exe_path)
+
+# ---Add glad---
+add_library(glad third_party/glad/src/glad.c)
+target_include_directories(glad PUBLIC third_party/glad/include)
+target_link_libraries(${PROJECT_NAME} PRIVATE glad)
