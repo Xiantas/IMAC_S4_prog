@@ -108,7 +108,7 @@ int main() {
         boid = Boid {
             .position = point,
             .direction = point,
-            .speed = 0.0047,
+            .speed = 0.015,
             .detectionRadius = .25,
             .dodgeRadius = .13,
         };
