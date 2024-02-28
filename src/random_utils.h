@@ -4,9 +4,9 @@
 
 namespace rng {
 
-float uniform0to1();
-double duniform0to1();
+auto uniform0to1() -> float;
+auto duniform0to1() -> double;
 
-glm::vec2 pointInRect(glm::vec2 p1, glm::vec2 p2);
+auto pointInRect(glm::vec2 p1, glm::vec2 p2) -> glm::vec2;
 
 } // namespace random

@@ -2,8 +2,9 @@
 
 #include <glad/glad.h>
 
-GLshader::GLshader(GLuint shaderType) {
-}
+GLshader::GLshader(GLuint shaderType)
+    : shaderType(glCreateShader(shaderType)) 
+{}
 
 GLshader::GLshader(GLshader &&shader)
     : address(shader.address)

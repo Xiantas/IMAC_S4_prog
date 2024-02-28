@@ -26,7 +26,7 @@ void onError(int error, const char* description) {
     std::cout << "glfw error #" << error << ": " << description << "\n";
 }
 
-int main() {
+auto main() -> int {
     // Run the tests
     if (doctest::Context{}.run() != 0)
         return EXIT_FAILURE;

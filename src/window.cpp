@@ -8,7 +8,7 @@
 #include <glad/glad.h>
 
 
-GLFWwindow *basicWindowInit(int width, int height, std::string title) {
+auto basicWindowInit(int width, int height, std::string title) -> GLFWwindow* {
     GLFWwindow *window = glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
 
 #ifdef __APPLE__

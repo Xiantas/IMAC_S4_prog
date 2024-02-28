@@ -6,4 +6,4 @@
 #include <GLFW/glfw3.h>
 
 
-GLFWwindow *basicWindowInit(int width, int height, std::string title);
+auto basicWindowInit(int width, int height, std::string title) -> GLFWwindow*;

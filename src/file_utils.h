@@ -5,6 +5,6 @@
 
 namespace file_utils {
 
-void read(std::string &dest, std::filesystem::path const &path);
+auto read(std::string &dest, std::filesystem::path const &path) -> std::string;
 
 } // namespace file_utils

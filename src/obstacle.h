@@ -8,7 +8,7 @@ class Obstacle {
 public:
     Obstacle(glm::vec2 position, float radius) : position(position), radius(radius) {}
     
-    bool isInside(glm::vec2 point) const {
+    auto isInside(glm::vec2 point) const -> bool {
         return glm::length(point - position) <= radius;
     }
 
