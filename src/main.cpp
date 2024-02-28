@@ -16,6 +16,7 @@
 #include "doctest/doctest.h"
 
 #include "window.h"
+#include "openGL/program.h"
 #include "boid.h"
 #include "file_utils.h"
 #include "random_utils.h"
@@ -40,30 +41,17 @@ auto main() -> int {
 
     GLFWwindow *window = basicWindowInit(1000, 1000, std::string("Machin"));
 
-    std::string vsString, fsString;
-    file_utils::read(vsString, "../shaders/boids.vs.glsl");
-    file_utils::read(fsString, "../shaders/boids.fs.glsl");
-    char const
-        *vsChars = vsString.c_str(),
-        *fsChars = fsString.c_str();
+    GLshader vsShader(GL_VERTEX_SHADER), fsShader(GL_FRAGMENT_SHADER);
+    vsShader.setCodeFromFile("../shaders/boids.vs.glsl");
+    fsShader.setCodeFromFile("../shaders/boids.fs.glsl");
 
-    GLuint vsShader, fsShader, programID;
+    GLprogram renderProgram;
+    renderProgram
+        .addShader(vsShader)
+        .addShader(fsShader)
+        .link();
 
-    vsShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vsShader, 1, &vsChars, nullptr);
-    glCompileShader(vsShader);
-    // TODO finish this : refactor + error handling
-
-    fsShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fsShader, 1, &fsChars, nullptr);
-    glCompileShader(fsShader);
-
-    programID = glCreateProgram();
-    glAttachShader(programID, vsShader);
-    glAttachShader(programID, fsShader);
-    glLinkProgram(programID);
-
-    glUseProgram(programID);
+    renderProgram.use();
 
     GLuint singularBoidVBO;
     {
@@ -144,9 +132,6 @@ auto main() -> int {
     glDeleteBuffers(1, &boidsDisplacementVBO);
     glDeleteBuffers(1, &singularBoidVBO);
     glDeleteVertexArrays(1, &boidsVAO);
-    glDeleteProgram(programID);
-    glDeleteShader(vsShader);
-    glDeleteShader(fsShader);
 
     glfwTerminate(); 
 }

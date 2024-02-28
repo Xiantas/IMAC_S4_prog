@@ -11,7 +11,7 @@
 namespace _fs = std::filesystem;
 
 namespace file_utils {
-auto read(std::string &dest, _fs::path const &path) -> std::string {
+auto read(_fs::path const &path) -> std::string {
 
     //TODO on vérifie que dir()/path existe, sinon on prend juste path sinon dir/../path
     std::ifstream input(path.c_str());
@@ -22,7 +22,7 @@ auto read(std::string &dest, _fs::path const &path) -> std::string {
     std::stringstream buffer;
     buffer << input.rdbuf();
     
-    dest = buffer.str();
+    return buffer.str();
 }
 
 } // namespace file_utils
