@@ -2,7 +2,10 @@
 
 #include <glad/glad.h>
 
+#include <string>
 #include "file_utils.h"
+
+#include <iostream>
 
 GLshader::GLshader(GLuint shaderType)
     : shaderType(glCreateShader(shaderType))
@@ -16,12 +19,26 @@ GLshader::GLshader(GLshader &&shader)
 
 GLshader::~GLshader() {
     glDeleteShader(this->address);
+    std::cout << "DESTRUCTION DU SHADER BOOM!!!!\n";
 }
 
 void GLshader::setCode(std::string const &code) {
     auto chars = code.c_str();
     glShaderSource(this->address, 1, &chars, nullptr);
     glCompileShader(this->address);
+
+    GLint LATAILELE;
+    glGetShaderiv(this->address, GL_INFO_LOG_LENGTH, &LATAILELE);
+    std::string AGAGA;
+    AGAGA.reserve(LATAILELE);
+    glGetShaderInfoLog(
+        this->address,
+        LATAILELE,
+        nullptr,
+        AGAGA.data()
+    );
+
+    std::cout << AGAGA << '\n';
 }
             
 void GLshader::setCodeFromFile(std::filesystem::path const &path) {
@@ -54,6 +71,19 @@ auto GLprogram::addShader(GLshader const &shader) -> GLprogram& {
 
 void GLprogram::link() {
     glLinkProgram(this->address);
+
+    GLint LATAILELE;
+    glGetProgramiv(this->address, GL_INFO_LOG_LENGTH, &LATAILELE);
+    std::string AGAGA;
+    AGAGA.reserve(LATAILELE);
+    glGetProgramInfoLog(
+        this->address,
+        LATAILELE,
+        nullptr,
+        AGAGA.data()
+    );
+
+    std::cout << AGAGA << '\n';
 }
 
 void GLprogram::use() {
