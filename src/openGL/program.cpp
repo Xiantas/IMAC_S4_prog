@@ -8,7 +8,8 @@
 #include <iostream>
 
 GLshader::GLshader(GLuint shaderType)
-    : shaderType(glCreateShader(shaderType))
+    : address(glCreateShader(shaderType))
+    , shaderType(shaderType)
 {}
 
 GLshader::GLshader(GLshader &&shader)
@@ -19,7 +20,6 @@ GLshader::GLshader(GLshader &&shader)
 
 GLshader::~GLshader() {
     glDeleteShader(this->address);
-    std::cout << "DESTRUCTION DU SHADER BOOM!!!!\n";
 }
 
 void GLshader::setCode(std::string const &code) {
