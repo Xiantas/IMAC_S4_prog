@@ -42,8 +42,8 @@ auto main() -> int {
     GLFWwindow *window = basicWindowInit(1000, 1000, std::string("Machin"));
 
     GLshader vsShader(GL_VERTEX_SHADER), fsShader(GL_FRAGMENT_SHADER);
-    vsShader.setCodeFromFile("../shaders/boids.vs.glsl");
-    fsShader.setCodeFromFile("../shaders/boids.fs.glsl");
+    vsShader.setCodeFromFile("shaders/boids.vs.glsl");
+    fsShader.setCodeFromFile("shaders/boids.fs.glsl");
 
     GLprogram renderProgram;
     renderProgram
