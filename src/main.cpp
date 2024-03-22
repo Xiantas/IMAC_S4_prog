@@ -51,7 +51,14 @@ auto main() -> int {
         .addShader(fsShader)
         .link();
 
-    renderProgram.use();
+    vsShader.setCodeFromFile("shaders/fade.vs.glsl");
+    fsShader.setCodeFromFile("shaders/fade.fs.glsl");
+
+    GLprogram fadeProgram;
+    fadeProgram
+        .addShader(vsShader)
+        .addShader(fsShader)
+        .link();
 
     GLuint singularBoidVBO;
     {
@@ -88,7 +95,6 @@ auto main() -> int {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), (void*)(2*sizeof(GLfloat)));
     glVertexAttribDivisor(2, 1);
 
-//    glBindVertexArray(0);
 
     std::vector<Boid> crowd(N);
     for (Boid &boid : crowd) {
@@ -96,11 +102,41 @@ auto main() -> int {
         boid = Boid {
             .position = point,
             .direction = point,
-            .speed = 0.015,
+            .speed = 0.005,
             .detectionRadius = .25,
             .dodgeRadius = .13,
         };
     }
+
+    GLuint squareVBO;
+    {
+        glGenBuffers(1, &squareVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, squareVBO);
+        GLfloat vertices[] = {
+            -1.0f, -1.0f,
+            1.0f, -1.0f,
+            -1.0f, 1.0f,
+            1.0f, 1.0f,
+        };
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    GLuint squareVAO;
+    glGenVertexArrays(1, &squareVAO);
+
+    glBindVertexArray(squareVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, squareVBO);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), nullptr);
+
+    glBindBuffer(GL_ARRAY_BUFFER, boidsDisplacementVBO);
+
+    glBindVertexArray(0);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -119,8 +155,14 @@ auto main() -> int {
         }
         glBufferData(GL_ARRAY_BUFFER, drawData.size()*sizeof(glm::vec2), drawData.data(), GL_DYNAMIC_DRAW);
 
-		glClear(GL_COLOR_BUFFER_BIT);
+//		glClear(GL_COLOR_BUFFER_BIT);
 
+        glBindVertexArray(squareVAO);
+        fadeProgram.use();
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        glBindVertexArray(boidsVAO);
+        renderProgram.use();
         glDrawArraysInstanced(GL_TRIANGLES, 0, 3, N);
 
 
