@@ -14,7 +14,7 @@ void Boid::update(std::span<Boid> crowd) {
         if (this != &boid && distance <= detectionRadius) {
             massCenter += boid.position;
             averageDir += boid.direction;
-            repulsion += distance < dodgeRadius
+            repulsion += distance < this->dodgeRadius
                 ? link/(distance*distance)
                 : glm::vec2(0, 0);
             count++;

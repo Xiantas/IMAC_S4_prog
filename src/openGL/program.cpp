@@ -27,18 +27,24 @@ void GLshader::setCode(std::string const &code) {
     glShaderSource(this->address, 1, &chars, nullptr);
     glCompileShader(this->address);
 
-    GLint LATAILELE;
-    glGetShaderiv(this->address, GL_INFO_LOG_LENGTH, &LATAILELE);
-    std::string AGAGA;
-    AGAGA.reserve(LATAILELE);
-    glGetShaderInfoLog(
-        this->address,
-        LATAILELE,
-        nullptr,
-        AGAGA.data()
-    );
+    GLint isCompiled = 0;
+    glGetShaderiv(this->address, GL_COMPILE_STATUS, &isCompiled);
+    if (isCompiled == GL_FALSE) {
+        std::cout << "Shader didn't compile !\n";
 
-    std::cout << AGAGA << '\n';
+        GLint LATAILELE;
+        glGetShaderiv(this->address, GL_INFO_LOG_LENGTH, &LATAILELE);
+        std::string AGAGA;
+        AGAGA.reserve(LATAILELE);
+        glGetShaderInfoLog(
+            this->address,
+            LATAILELE,
+            nullptr,
+            AGAGA.data()
+        );
+
+        std::cout << AGAGA.c_str() << '\n';
+    }
 }
             
 void GLshader::setCodeFromFile(std::filesystem::path const &path) {
@@ -83,7 +89,7 @@ void GLprogram::link() {
         AGAGA.data()
     );
 
-    std::cout << AGAGA << '\n';
+    std::cout << AGAGA.c_str() << '\n';
 }
 
 void GLprogram::use() {
