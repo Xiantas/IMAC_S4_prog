@@ -20,6 +20,7 @@
 #include "boid.h"
 #include "file_utils.h"
 #include "random_utils.h"
+#include "OpenGL/arrays.h"
 
 constexpr size_t N = 500;
 
@@ -53,40 +54,15 @@ auto main() -> int {
 
     renderProgram.use();
 
-    GLuint singularBoidVBO;
-    {
-        glGenBuffers(1, &singularBoidVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, singularBoidVBO);
-        GLfloat vertices[] = {
-             0.03f,  0.f,
-            -0.01f,  0.01f,
-            -0.01f, -0.01f,
-        };
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
-
-    std::vector<glm::vec2> drawData(2*N);
-    GLuint boidsDisplacementVBO;
-    glGenBuffers(1, &boidsDisplacementVBO);
-
+    GLuint singularBoidVBO = createSingularBoidVBO(); 
+    GLuint boidsDisplacementVBO = createBoidsDisplacementVBO(N); 
 
     GLuint boidsVAO;
     glGenVertexArrays(1, &boidsVAO);
 
     glBindVertexArray(boidsVAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, singularBoidVBO);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), nullptr);
-
-    glBindBuffer(GL_ARRAY_BUFFER, boidsDisplacementVBO);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), nullptr);
-    glVertexAttribDivisor(1, 1);
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), (void*)(2*sizeof(GLfloat)));
-    glVertexAttribDivisor(2, 1);
+    setupVertexAttributes(singularBoidVBO, boidsDisplacementVBO);
 
 //    glBindVertexArray(0);
 
@@ -113,9 +89,12 @@ auto main() -> int {
             if (boid.position.y >  1) boid.position.y = -0.99;
         }
 
+        glBindBuffer(GL_ARRAY_BUFFER, boidsDisplacementVBO);
+        std::vector<glm::vec2> drawData(2 * N);
+
         for (size_t i = 0; i < N; ++i) {
-            drawData[2*i] = crowd[i].position;
-            drawData[2*i+1] = crowd[i].direction;
+            drawData[2 * i] = crowd[i].position;
+            drawData[2 * i + 1] = crowd[i].direction;
         }
         glBufferData(GL_ARRAY_BUFFER, drawData.size()*sizeof(glm::vec2), drawData.data(), GL_DYNAMIC_DRAW);
 
@@ -126,7 +105,6 @@ auto main() -> int {
 
         glfwSwapBuffers(window);
     }
-
 
 
     glDeleteBuffers(1, &boidsDisplacementVBO);
