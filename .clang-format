@@ -3,8 +3,8 @@ BasedOnStyle: Google
 AccessModifierOffset: '-4'
 AlignAfterOpenBracket: BlockIndent
 AlignConsecutiveMacros: 'true'
-AlignConsecutiveAssignments: 'true'
-AlignConsecutiveDeclarations: 'true'
+AlignConsecutiveAssignments: 'false'
+AlignConsecutiveDeclarations: 'false'
 AlignEscapedNewlines: Left
 AlignOperands: 'true'
 AlignTrailingComments: 'true'
@@ -25,18 +25,18 @@ BinPackParameters: 'true'
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
 BraceWrapping:
-    AfterCaseLabel: true
+    AfterCaseLabel: false
     AfterClass: false
-    AfterControlStatement: true
+    AfterControlStatement: false
     AfterEnum: false
-    AfterFunction: true
-    AfterNamespace: false
+    AfterFunction: false
+    AfterNamespace: true
     AfterObjCDeclaration: true
     AfterStruct: false
     AfterUnion: false
     AfterExternBlock: true
-    BeforeCatch: true
-    BeforeElse: true
+    BeforeCatch: false
+    BeforeElse: false
     BeforeLambdaBody: false
     IndentBraces: false
     SplitEmptyFunction: false
@@ -56,7 +56,7 @@ DerivePointerAlignment: 'false'
 DisableFormat: 'false'
 ExperimentalAutoDetectBinPacking: 'false'
 FixNamespaceComments: 'true'
-IncludeBlocks: Merge
+IncludeBlocks: Regroup
 IndentCaseLabels: 'false'
 IndentPPDirectives: None
 IndentWidth: '4'
