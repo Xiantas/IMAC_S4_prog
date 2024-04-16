@@ -54,12 +54,31 @@ std::vector<ShapeVertex> createSphereVertices(float radius, unsigned int rings, 
     return vertices;
 }
 
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+void processInput(GLFWwindow* window) {
+    const float cameraSpeed = 0.05f; 
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cameraPos += cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+}
 
 int main() {
+
     if (!glfwInit()) {
         std::cout << "Couldn't init glfw\n";
         return -1;
     }
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     glfwSetErrorCallback(onError);
     GLFWwindow* window = basicWindowInit(1000, 1000, std::string("Machin"));
@@ -68,13 +87,8 @@ int main() {
         glfwTerminate();
         return -1;
     }
-
-    if (!gladLoadGL()) {
-        std::cerr << "Failed to initialize OpenGL context" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-
+    glfwMakeContextCurrent(window);
+    glViewport(0, 0, 1000, 1000);
     GLshader vsShader(GL_VERTEX_SHADER), fsShader(GL_FRAGMENT_SHADER);
     vsShader.setCodeFromFile("shaders/3D.vs.glsl");
     fsShader.setCodeFromFile("shaders/normals.fs.glsl");
@@ -119,12 +133,14 @@ int main() {
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
+        processInput(window);   
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glm::mat4 ViewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        
         for (Boid& boid : crowd) {
             boid.update(crowd); 
         }
-        glm::mat4 ViewMatrix = glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
         for (const Boid& boid : crowd) {
             glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f), boid.position);
@@ -145,7 +161,6 @@ int main() {
 
         glfwSwapBuffers(window);
     }
-
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
