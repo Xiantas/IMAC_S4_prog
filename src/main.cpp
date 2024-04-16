@@ -26,12 +26,12 @@ void onError(int error, const char* description) {
     std::cout << "glfw error #" << error << ": " << description << "\n";
 }
 
+//Sphère qui est moche mais on la remplacera de toute façon:
 struct ShapeVertex {
     glm::vec3 position;
     glm::vec3 normal;
     glm::vec2 texCoords;
 };
-
 std::vector<ShapeVertex> createSphereVertices(float radius, unsigned int rings, unsigned int sectors) {
     std::vector<ShapeVertex> vertices;
     float const R = 1.0f / (float)(rings - 1);
@@ -53,6 +53,7 @@ std::vector<ShapeVertex> createSphereVertices(float radius, unsigned int rings, 
     }
     return vertices;
 }
+
 
 int main() {
     if (!glfwInit()) {
@@ -89,7 +90,7 @@ int main() {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
 
-    std::vector<ShapeVertex> sphereVertices = createSphereVertices(0.05f, 20, 20); // Adjust the radius as needed
+    std::vector<ShapeVertex> sphereVertices = createSphereVertices(0.15f, 2000, 20); 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertex) * sphereVertices.size(), sphereVertices.data(), GL_STATIC_DRAW);
 
@@ -106,11 +107,11 @@ int main() {
 
     std::vector<Boid> crowd(N);
     for (Boid& boid : crowd) {
-        glm::vec3 point = rng::pointInSphere(4.0f); 
+        glm::vec3 point = rng::pointInSphere(1.0f); 
         boid = Boid{
             .position = point,
             .direction = point,
-            .speed = 0.015,
+            .speed = 0.005,
             .detectionRadius = 0.25f,
             .dodgeRadius = 0.13f,
         };
@@ -120,16 +121,15 @@ int main() {
         glfwPollEvents();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        for (Boid& boid : crowd) {
+            boid.update(crowd); 
+        }
         glm::mat4 ViewMatrix = glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
         for (const Boid& boid : crowd) {
             glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f), boid.position);
-
             glm::mat4 MVMatrix = ViewMatrix * ModelMatrix;
-
             glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
-
             glm::mat4 MVP = ProjMatrix * MVMatrix;
 
             GLint locMVMatrix = glGetUniformLocation(renderProgram.getID(), "uMVMatrix");
