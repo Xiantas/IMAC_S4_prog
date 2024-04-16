@@ -1,97 +1,75 @@
 #include "openGL/program.h"
-
 #include <glad/glad.h>
-
+#include <iostream>
 #include <string>
 #include "file_utils.h"
 
-#include <iostream>
+GLshader::GLshader(GLuint shaderType) : address(glCreateShader(shaderType)), shaderType(shaderType) {}
 
-GLshader::GLshader(GLuint shaderType)
-    : address(glCreateShader(shaderType))
-    , shaderType(shaderType)
-{}
-
-GLshader::GLshader(GLshader &&shader)
-    : address(shader.address)
-{
+GLshader::GLshader(GLshader &&shader) : address(shader.address), shaderType(shader.shaderType) {
     shader.address = 0;
 }
 
 GLshader::~GLshader() {
-    glDeleteShader(this->address);
+    glDeleteShader(address);
 }
 
-void GLshader::setCode(std::string const &code) {
-    auto chars = code.c_str();
-    glShaderSource(this->address, 1, &chars, nullptr);
-    glCompileShader(this->address);
+void GLshader::setCode(const std::string &code) {
+    const char *codeCStr = code.c_str();
+    glShaderSource(address, 1, &codeCStr, nullptr);
+    glCompileShader(address);
 
     GLint isCompiled = 0;
-    glGetShaderiv(this->address, GL_COMPILE_STATUS, &isCompiled);
-    if (isCompiled == GL_FALSE) {
-        std::cout << "Shader didn't compile !\n";
+    glGetShaderiv(address, GL_COMPILE_STATUS, &isCompiled);
+    if (!isCompiled) {
+        GLint maxLength = 0;
+        glGetShaderiv(address, GL_INFO_LOG_LENGTH, &maxLength);
 
-        GLint LATAILELE;
-        glGetShaderiv(this->address, GL_INFO_LOG_LENGTH, &LATAILELE);
-        std::string AGAGA;
-        AGAGA.reserve(LATAILELE);
-        glGetShaderInfoLog(
-            this->address,
-            LATAILELE,
-            nullptr,
-            AGAGA.data()
-        );
-
-        std::cout << AGAGA.c_str() << '\n';
+        std::vector<char> errorLog(maxLength);
+        glGetShaderInfoLog(address, maxLength, &maxLength, &errorLog[0]);
+        std::cerr << "Shader compilation failed: " << &errorLog[0] << std::endl;
     }
 }
-            
-void GLshader::setCodeFromFile(std::filesystem::path const &path) {
-    auto code = file_utils::read(path);
 
-    this->setCode(code);
+void GLshader::setCodeFromFile(const std::filesystem::path &path) {
+    std::string code = file_utils::read(path);
+    setCode(code);
 }
 
+GLprogram::GLprogram() : address(glCreateProgram()) {}
 
-GLprogram::GLprogram()
-    : address(glCreateProgram())
-{}
-
-GLprogram::GLprogram(GLprogram &&program)
-    : address(program.address)
-{
+GLprogram::GLprogram(GLprogram &&program) : address(program.address) {
     program.address = 0;
 }
 
 GLprogram::~GLprogram() {
-    glDeleteProgram(this->address);
+    glDeleteProgram(address);
 }
 
-
-auto GLprogram::addShader(GLshader const &shader) -> GLprogram& {
-    glAttachShader(this->address, shader.address);
-
+GLprogram& GLprogram::addShader(const GLshader &shader) {
+    glAttachShader(address, shader.getID());
     return *this;
 }
 
 void GLprogram::link() {
-    glLinkProgram(this->address);
+    glLinkProgram(address);
 
-    GLint LATAILELE;
-    glGetProgramiv(this->address, GL_INFO_LOG_LENGTH, &LATAILELE);
-    std::string AGAGA;
-    AGAGA.reserve(LATAILELE);
-    glGetProgramInfoLog(
-        this->address,
-        LATAILELE,
-        nullptr,
-        AGAGA.data()
-    );
+    GLint isLinked = 0;
+    glGetProgramiv(address, GL_LINK_STATUS, &isLinked);
+    if (!isLinked) {
+        GLint maxLength = 0;
+        glGetProgramiv(address, GL_INFO_LOG_LENGTH, &maxLength);
 
-    std::cout << AGAGA.c_str() << '\n';
+        std::vector<char> infoLog(maxLength);
+        glGetProgramInfoLog(address, maxLength, &maxLength, &infoLog[0]);
+        std::cerr << "Program linking failed: " << &infoLog[0] << std::endl;
+    }
 }
 
 void GLprogram::use() {
-    glUseProgram(this->address);
+    glUseProgram(address);
+}
+
+GLint GLprogram::getUniformLocation(const std::string &name) {
+    return glGetUniformLocation(address, name.c_str());
 }
