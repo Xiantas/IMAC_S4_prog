@@ -1,11 +1,7 @@
 #include "boid.h"
 
-#include <span>
-
-#include "glm/glm.hpp"
-
 void Boid::update(std::span<Boid> crowd) {
-    glm::vec2 massCenter{0, 0}, averageDir{0, 0}, repulsion{0, 0};
+    glm::vec3 massCenter{0, 0, 0}, averageDir{0, 0, 0}, repulsion{0, 0, 0};
 
     float count(0);
     for (Boid const &boid : crowd) {
@@ -16,7 +12,7 @@ void Boid::update(std::span<Boid> crowd) {
             averageDir += boid.direction;
             repulsion += distance < this->dodgeRadius
                 ? link/(distance*distance)
-                : glm::vec2(0, 0);
+                : glm::vec3(0, 0, 0);
             count++;
         }
     }

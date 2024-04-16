@@ -3,6 +3,8 @@
 #include <random>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace rng {
 
@@ -24,6 +26,15 @@ auto pointInRect(glm::vec2 p1, glm::vec2 p2) -> glm::vec2 {
     return glm::vec2(
         p1.x + uniform0to1() * (p2.x - p1.x),
         p1.y + uniform0to1() * (p2.y - p1.y));
+}
+
+auto pointInSphere(float radius) -> glm::vec3 {
+    float theta = 2 * glm::pi<float>() * uniform0to1();
+    float phi = glm::acos(2 * uniform0to1() - 1);
+    float x = radius * glm::sin(phi) * glm::cos(theta);
+    float y = radius * glm::sin(phi) * glm::sin(theta);
+    float z = radius * glm::cos(phi);
+    return glm::vec3(x, y, z);
 }
 
 } // namespace random

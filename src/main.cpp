@@ -15,7 +15,7 @@
 #include "boid.h"
 #include "doctest/doctest.h"
 #include "file_utils.h"
-#include "openGL/arrays.h"
+#include "openGL/arrays.h" 
 #include "openGL/program.h"
 #include "random_utils.h"
 #include "window.h"
@@ -89,7 +89,7 @@ int main() {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
 
-    std::vector<ShapeVertex> sphereVertices = createSphereVertices(1.0f, 20, 20);
+    std::vector<ShapeVertex> sphereVertices = createSphereVertices(0.05f, 20, 20); // Adjust the radius as needed
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertex) * sphereVertices.size(), sphereVertices.data(), GL_STATIC_DRAW);
 
@@ -103,28 +103,49 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
     glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), 1.0f, 0.1f, 100.f);
-    glm::mat4 MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
-    glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
-    GLint locMVPMatrix = glGetUniformLocation(renderProgram.getID(), "uMVPMatrix");
-    GLint locMVMatrix = glGetUniformLocation(renderProgram.getID(), "uMVMatrix");
-    GLint locNormalMatrix = glGetUniformLocation(renderProgram.getID(), "uNormalMatrix");
+    std::vector<Boid> crowd(N);
+    for (Boid& boid : crowd) {
+        glm::vec3 point = rng::pointInSphere(4.0f); 
+        boid = Boid{
+            .position = point,
+            .direction = point,
+            .speed = 0.015,
+            .detectionRadius = 0.25f,
+            .dodgeRadius = 0.13f,
+        };
+    }
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glUniformMatrix4fv(locMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
-        glUniformMatrix4fv(locMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-        glUniformMatrix4fv(locNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+        glm::mat4 ViewMatrix = glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, sphereVertices.size());
-        glBindVertexArray(0);
+        for (const Boid& boid : crowd) {
+            glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f), boid.position);
+
+            glm::mat4 MVMatrix = ViewMatrix * ModelMatrix;
+
+            glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
+
+            glm::mat4 MVP = ProjMatrix * MVMatrix;
+
+            GLint locMVMatrix = glGetUniformLocation(renderProgram.getID(), "uMVMatrix");
+            GLint locNormalMatrix = glGetUniformLocation(renderProgram.getID(), "uNormalMatrix");
+            GLint locMVPMatrix = glGetUniformLocation(renderProgram.getID(), "uMVPMatrix");
+
+            glUniformMatrix4fv(locMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
+            glUniformMatrix4fv(locNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+            glUniformMatrix4fv(locMVPMatrix, 1, GL_FALSE, glm::value_ptr(MVP));
+
+            glDrawArrays(GL_TRIANGLES, 0, sphereVertices.size());
+        }
 
         glfwSwapBuffers(window);
     }
+
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);

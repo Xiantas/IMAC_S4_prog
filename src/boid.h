@@ -6,8 +6,8 @@
 
 class Boid {
 public :
-    glm::vec2 position;
-    glm::vec2 direction;
+    glm::vec3 position;
+    glm::vec3 direction;
 
     float speed;
     float detectionRadius;
