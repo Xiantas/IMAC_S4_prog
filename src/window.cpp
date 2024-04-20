@@ -8,8 +8,12 @@
 #include <glad/glad.h>
 
 
-auto basicWindowInit(int width, int height, std::string title) -> GLFWwindow* {
-    GLFWwindow *window = glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
+Window::Window(int width, int height, std::string title) 
+{
+    if (!glfwInit()) {
+        std::cout << "Couldn't init glfw\n";
+        exit(-1);
+    }
 
 #ifdef __APPLE__
     /* We need to explicitly ask for a 3.3 context on Mac */
@@ -23,25 +27,29 @@ auto basicWindowInit(int width, int height, std::string title) -> GLFWwindow* {
         std::cout << "glfw error #" << error << ": " << description << "\n";
     });
 
-    if (!window) {
+    this->handle = glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
+
+    if (!this->handle) {
         std::cout << "Couldn't create the window\n";
         glfwTerminate();
         exit(-1);
     }
 
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(this->handle);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         exit(-1);
     }
     
-	glfwSetKeyCallback(window, [] (GLFWwindow* window, int key, int, int action, int) {
+	glfwSetKeyCallback(this->handle, [] (GLFWwindow* window, int key, int, int action, int) {
         if (action == GLFW_PRESS) {
             if (key == GLFW_KEY_ESCAPE) {
                 glfwSetWindowShouldClose(window, GLFW_TRUE);
             } 
         }
     });
+}
 
-    return window;
+Window::~Window() {
+    glfwTerminate();
 }

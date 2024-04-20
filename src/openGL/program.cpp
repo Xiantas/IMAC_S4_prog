@@ -1,12 +1,18 @@
 #include "openGL/program.h"
+
 #include <glad/glad.h>
+
 #include <iostream>
 #include <string>
+#include <vector>
+
 #include "file_utils.h"
 
-GLshader::GLshader(GLuint shaderType) : address(glCreateShader(shaderType)), shaderType(shaderType) {}
+GLshader::GLshader(GLuint shaderType)
+    : address(glCreateShader(shaderType)), shaderType(shaderType) {}
 
-GLshader::GLshader(GLshader &&shader) : address(shader.address), shaderType(shader.shaderType) {
+GLshader::GLshader(GLshader&& shader)
+    : address(shader.address), shaderType(shader.shaderType) {
     shader.address = 0;
 }
 
@@ -14,62 +20,64 @@ GLshader::~GLshader() {
     glDeleteShader(address);
 }
 
-void GLshader::setCode(const std::string &code) {
-    const char *codeCStr = code.c_str();
-    glShaderSource(address, 1, &codeCStr, nullptr);
-    glCompileShader(address);
+void GLshader::setCode(const std::string& code) {
+    const char* codeCStr = code.c_str();
+    glShaderSource(this->address, 1, &codeCStr, nullptr);
+    glCompileShader(this->address);
 
     GLint isCompiled = 0;
-    glGetShaderiv(address, GL_COMPILE_STATUS, &isCompiled);
+    glGetShaderiv(this->address, GL_COMPILE_STATUS, &isCompiled);
     if (!isCompiled) {
         GLint maxLength = 0;
-        glGetShaderiv(address, GL_INFO_LOG_LENGTH, &maxLength);
+        glGetShaderiv(this->address, GL_INFO_LOG_LENGTH, &maxLength);
 
         std::vector<char> errorLog(maxLength);
-        glGetShaderInfoLog(address, maxLength, &maxLength, &errorLog[0]);
+        glGetShaderInfoLog(this->address, maxLength, &maxLength, &errorLog[0]);
         std::cerr << "Shader compilation failed: " << &errorLog[0] << std::endl;
     }
 }
 
-void GLshader::setCodeFromFile(const std::filesystem::path &path) {
+void GLshader::setCodeFromFile(const std::filesystem::path& path) {
     std::string code = file_utils::read(path);
     setCode(code);
 }
 
-GLprogram::GLprogram() : address(glCreateProgram()) {}
+GLprogram::GLprogram()
+    : address(glCreateProgram()) {}
 
-GLprogram::GLprogram(GLprogram &&program) : address(program.address) {
+GLprogram::GLprogram(GLprogram&& program)
+    : address(program.address) {
     program.address = 0;
 }
 
 GLprogram::~GLprogram() {
-    glDeleteProgram(address);
+    glDeleteProgram(this->address);
 }
 
-GLprogram& GLprogram::addShader(const GLshader &shader) {
-    glAttachShader(address, shader.getID());
+GLprogram& GLprogram::addShader(const GLshader& shader) {
+    glAttachShader(this->address, shader.getID());
     return *this;
 }
 
 void GLprogram::link() {
-    glLinkProgram(address);
+    glLinkProgram(this->address);
 
     GLint isLinked = 0;
-    glGetProgramiv(address, GL_LINK_STATUS, &isLinked);
+    glGetProgramiv(this->address, GL_LINK_STATUS, &isLinked);
     if (!isLinked) {
         GLint maxLength = 0;
-        glGetProgramiv(address, GL_INFO_LOG_LENGTH, &maxLength);
+        glGetProgramiv(this->address, GL_INFO_LOG_LENGTH, &maxLength);
 
         std::vector<char> infoLog(maxLength);
-        glGetProgramInfoLog(address, maxLength, &maxLength, &infoLog[0]);
+        glGetProgramInfoLog(this->address, maxLength, &maxLength, &infoLog[0]);
         std::cerr << "Program linking failed: " << &infoLog[0] << std::endl;
     }
 }
 
 void GLprogram::use() {
-    glUseProgram(address);
+    glUseProgram(this->address);
 }
 
-GLint GLprogram::getUniformLocation(const std::string &name) {
-    return glGetUniformLocation(address, name.c_str());
+GLint GLprogram::getUniformLocation(const std::string& name) {
+    return glGetUniformLocation(this->address, name.c_str());
 }

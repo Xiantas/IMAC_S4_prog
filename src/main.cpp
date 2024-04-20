@@ -22,10 +22,6 @@
 
 constexpr size_t N = 100;
 
-void onError(int error, const char* description) {
-    std::cout << "glfw error #" << error << ": " << description << "\n";
-}
-
 //Sphère qui est moche mais on la remplacera de toute façon:
 struct ShapeVertex {
     glm::vec3 position;
@@ -72,23 +68,11 @@ void processInput(GLFWwindow* window) {
 
 int main() {
 
-    if (!glfwInit()) {
-        std::cout << "Couldn't init glfw\n";
-        return -1;
-    }
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+//    glfwMakeContextCurrent(window.handle);
+//    glViewport(0, 0, 1000, 1000);
 
-    glfwSetErrorCallback(onError);
-    GLFWwindow* window = basicWindowInit(1000, 1000, std::string("Machin"));
-    if (!window) {
-        std::cerr << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-    glViewport(0, 0, 1000, 1000);
+    Window window(1000, 1000, std::string("Machin"));
+
     GLshader vsShader(GL_VERTEX_SHADER), fsShader(GL_FRAGMENT_SHADER);
     vsShader.setCodeFromFile("shaders/3D.vs.glsl");
     fsShader.setCodeFromFile("shaders/normals.fs.glsl");
@@ -131,9 +115,9 @@ int main() {
         };
     }
 
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window.handle)) {
         glfwPollEvents();
-        processInput(window);   
+        processInput(window.handle);   
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glm::mat4 ViewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
@@ -159,11 +143,11 @@ int main() {
             glDrawArrays(GL_TRIANGLES, 0, sphereVertices.size());
         }
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window.handle);
     }
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glfwTerminate();
+//    glfwTerminate();
     return 0;
 }

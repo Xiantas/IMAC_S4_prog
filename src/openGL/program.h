@@ -15,7 +15,7 @@ public:
 
     void setCode(const std::string &code);
     void setCodeFromFile(const std::filesystem::path &path);
-    GLuint getID() const { return address; }
+    GLuint getID() const { return this->address; }
 
 private:
     GLuint address;
@@ -32,7 +32,7 @@ public:
     GLprogram& addShader(const GLshader &shader);
     void link();
     void use();
-    GLuint getID() const { return address; }
+    GLuint getID() const { return this->address; }
     GLint getUniformLocation(const std::string &name);
 
 private:
