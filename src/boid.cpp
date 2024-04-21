@@ -1,4 +1,5 @@
 #include "boid.h"
+#include "maths.h"
 
 void Boid::update(std::span<Boid> crowd) {
     glm::vec3 massCenter{0, 0, 0}, averageDir{0, 0, 0}, repulsion{0, 0, 0};

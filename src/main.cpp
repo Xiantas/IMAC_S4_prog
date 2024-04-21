@@ -19,6 +19,7 @@
 #include "openGL/program.h"
 #include "random_utils.h"
 #include "window.h"
+#include "maths.h"
 
 constexpr size_t N = 100;
 
@@ -122,14 +123,17 @@ int main() {
     std::vector<Boid> crowd(N);
     for (Boid& boid : crowd) {
         glm::vec3 point = rng::pointInSphere(1.0f); 
+        float randomSpeed = maths::randomUniformFloat(0.005f, 0.015f);
         boid = Boid{
             .position = point,
             .direction = point,
-            .speed = 0.005,
+            .speed = randomSpeed,
             .detectionRadius = 0.25f,
             .dodgeRadius = 0.13f,
         };
     }
+
+    GLint colorLoc = glGetUniformLocation(renderProgram.getID(), "boidColor");
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -156,8 +160,12 @@ int main() {
             glUniformMatrix4fv(locNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
             glUniformMatrix4fv(locMVPMatrix, 1, GL_FALSE, glm::value_ptr(MVP));
 
+            glUniform3fv(colorLoc, 1, glm::value_ptr(boid.color));
+            
             glDrawArrays(GL_TRIANGLES, 0, sphereVertices.size());
         }
+
+        GLint colorLoc = glGetUniformLocation(renderProgram.getID(), "boidColor");
 
         glfwSwapBuffers(window);
     }
