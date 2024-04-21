@@ -1,12 +1,12 @@
-# Blender MTL File: 'SeaWeed.blend'
-# Material Count: 1
+# Blender 3.6.2 MTL File: 'world.blend'
+# www.blender.org
 
-newmtl Seaweed
-Ns 225.000000
+newmtl Material.014
+Ns 250.000000
 Ka 1.000000 1.000000 1.000000
-Kd 0.010933 0.114935 0.011958
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
+map_Kd D:/Documents/IMAC/ANNEE2/COURS/PROG_Jules/PROJET/IMAC_S4_prog/assets/textures/seaweed_texture.png

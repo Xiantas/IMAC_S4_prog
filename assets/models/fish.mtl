@@ -1,12 +1,12 @@
-newmtl lambert4SG
-illum 4
-Kd 0.86 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-Ni 1.00
-newmtl polySurface2SG1
-illum 4
-Kd 0.05 0.04 0.15
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-Ni 1.00
+# Blender 3.6.2 MTL File: 'world.blend'
+# www.blender.org
+
+newmtl Material.008
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd D:/Documents/IMAC/ANNEE2/COURS/PROG_Jules/PROJET/IMAC_S4_prog/assets/textures/fish_texture.png
