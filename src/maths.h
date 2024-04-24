@@ -7,6 +7,7 @@ namespace maths {
     bool bernoulli(double p);
     double exponentialRandom(double theta);
     double gammaRandom(int alpha, double theta);
+    double cauchyRandom(double location, double scale);
 }
 
 #endif // MATHS_H
