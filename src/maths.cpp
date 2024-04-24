@@ -14,7 +14,6 @@ namespace maths {
         return rand_0_1() < p;
     }
 
-    //new:
     double cauchyRandom(double location, double scale) {
         double u = rand_0_1();
         return location + scale * tan(M_PI * (u - 0.5));
@@ -31,11 +30,11 @@ namespace maths {
         double L = exp(-lambda);
         int k = 0;
         double p = 1;
-        do {
+        while (p > L) {
             k++;
             double u = rand_0_1();
             p *= u;
-        } while (p > L);
+        }
         return k - 1;
     }
 
@@ -51,6 +50,7 @@ namespace maths {
         double U = rand_0_1();
         return -theta * std::log(U);
     }
+
     // Utiliser pour taille tortue (fonctionne que pour alpha entier et alpha = petite valeur)
     double gammaRandom(int alpha, double theta) {
         double sum = 0.0;
@@ -59,17 +59,6 @@ namespace maths {
         }
         return sum;
     }
-    //intégration de la fonction gamma pour obtenir la taille de la tortue
-    // int main() {
-    //     int alpha = 3;  // Paramètre de forme, entier
-    //     double theta = 0.5;  // Paramètre d'échelle
-
-    //     double gammaSize = gammaRandom(alpha, theta);
-    //     std::cout << "Generated Gamma Size: " << gammaSize << std::endl;
-
-    //     // Autres parties de votre simulation
-    //     return 0;
-    // }
 
 
 }   // namespace maths

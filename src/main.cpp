@@ -113,7 +113,7 @@ int main() {
     GLuint centralSphereVAO, centralSphereVBO;
     glGenVertexArrays(1, &centralSphereVAO);
     glGenBuffers(1, &centralSphereVBO);
-
+    
     //Loi Gamma 
     int alpha = 2;  
     double theta = 0.05;  
@@ -162,7 +162,7 @@ int main() {
         };
     }
 
-    while (!glfwWindowShouldClose(window)) {
+     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         processInput(window);   
 
@@ -172,11 +172,12 @@ int main() {
         //Loi de Cauchy
         double cauchyValue = maths::cauchyRandom(0.0, 4.0);  // grande dispersion pour avoir des valeurs extrêmes
         bool displayCentralSphere = fabs(cauchyValue) < 0.1;  // afficher si la valeur est dans certain intervalle
-        std::cout << "Cauchy value: " << cauchyValue << std::endl;
+        //std::cout << "Cauchy value: " << cauchyValue << std::endl;
         for (Boid& boid : crowd) {
             boid.update(crowd); 
         }
 
+        //Loi Bernoulli
         bool darkenSpheres = maths::bernoulli(0.7); //Les boids ont plus souvent peur qu'il ne l'ont pas
         glm::vec3 baseColor = glm::vec3(0.0, 1.0, 1.0); 
         glm::vec3 darkColor = glm::vec3(1.0, 0.0, 0.0);  
@@ -201,6 +202,8 @@ int main() {
 
                 glDrawArrays(GL_TRIANGLES, 0, centralSphereVertices.size());
             }
+
+            //Update la couleur des sphères
             glm::vec3 color = (darkenSpheres && displayCentralSphere) ? darkColor : baseColor;
             GLint locColor = glGetUniformLocation(renderProgram.getID(), "uColor");
             glUniform3fv(locColor, 1, glm::value_ptr(color));
