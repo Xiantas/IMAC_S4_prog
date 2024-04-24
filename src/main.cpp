@@ -20,7 +20,7 @@
 #include "random_utils.h"
 #include "window.h"
 
-constexpr size_t N = 100;
+constexpr size_t N = 1;
 
 //Sphère qui est moche mais on la remplacera de toute façon:
 struct ShapeVertex {
@@ -84,14 +84,74 @@ int main() {
         .link();
     renderProgram.use();
 
-    GLuint VAO, VBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    GLuint singularBoidVBO;
+    {
+        glGenBuffers(1, &singularBoidVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, singularBoidVBO);
+        GLfloat vertices[] = {
+            0.3f, 0.0f, 0.0f, 0.3162, 0.0, 0.9487,
+            -0.3, -0.2, 0.2, 0.3162, 0.0, 0.9487,
+            -0.3, 0.2, 0.2, 0.3162, 0.0, 0.9487,
 
+            -0.3, -0.2, -0.2, 0.3162, 0.0, -0.9487,
+            0.3f, 0.0f, 0.0f, 0.3162, 0.0, -0.9487,
+            -0.3, 0.2, -0.2, 0.3162, 0.0, -0.9487,
+
+            -0.3, -0.2, 0.2, 0.3162, -0.9487, 0.0,
+            0.3f, 0.0f, 0.0f, 0.3162, -0.9487, 0.0,
+            -0.3, -0.2, -0.2, 0.3162, -0.9487, 0.0,
+
+            -0.3, 0.2, -0.2, 0.3162, 0.9487, 0.0,
+            0.3f, 0.0f, 0.0f, 0.3162, 0.9487, 0.0,
+            -0.3, 0.2, 0.2, 0.3162, 0.9487, 0.0,
+
+            -0.3, 0.2, -0.2, -1.0, 0.0, 0.0,
+            -0.3, 0.2, 0.2, -1.0, 0.0, 0.0,
+            -0.3, -0.2, 0.2, -1.0, 0.0, 0.0,
+
+            -0.3, 0.2, -0.2, -1.0, 0.0, 0.0,
+            -0.3, -0.2, 0.2, -1.0, 0.0, 0.0,
+            -0.3, -0.2, -0.2, -1.0, 0.0, 0.0,
+        };
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    std::vector<glm::vec3> drawData(2*N);
+    GLuint boidsDisplacementVBO;
+    glGenBuffers(1, &boidsDisplacementVBO);
+
+    GLuint boidsVAO;
+    glGenVertexArrays(1, &boidsVAO);
+    glBindVertexArray(boidsVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, singularBoidVBO);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(
+        1, 3, GL_FLOAT,
+        GL_FALSE, 6*sizeof(GLfloat),
+        (void*)(3*sizeof(GLfloat)));
+
+    glBindBuffer(GL_ARRAY_BUFFER, boidsDisplacementVBO);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)0);
+    glVertexAttribDivisor(2,1);
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
+    glVertexAttribDivisor(3,1);
+
+    glBindVertexArray(0);
+
+    /*
     std::vector<ShapeVertex> sphereVertices = createSphereVertices(0.15f, 2000, 20); 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertex) * sphereVertices.size(), sphereVertices.data(), GL_STATIC_DRAW);
+    */
 
+    /*
     glBindVertexArray(VAO);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ShapeVertex), (void*)offsetof(ShapeVertex, position));
@@ -99,6 +159,7 @@ int main() {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(ShapeVertex), (void*)offsetof(ShapeVertex, normal));
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(ShapeVertex), (void*)offsetof(ShapeVertex, texCoords));
+    */
 
     glEnable(GL_DEPTH_TEST);
     glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), 1.0f, 0.1f, 100.f);
@@ -109,28 +170,41 @@ int main() {
         boid = Boid{
             .position = point,
             .direction = point,
-            .speed = 0.005,
+            .speed = 0.015,
             .detectionRadius = 0.25f,
             .dodgeRadius = 0.13f,
         };
     }
 
+    glBindVertexArray(boidsVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, boidsDisplacementVBO);
     while (!glfwWindowShouldClose(window.handle)) {
         glfwPollEvents();
         processInput(window.handle);   
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glm::mat4 ViewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         
+        /*
         for (Boid& boid : crowd) {
             boid.update(crowd); 
+            if (boid.position.x < -1) boid.position.x =  0.99;
+            if (boid.position.x >  1) boid.position.x = -0.99;
+            if (boid.position.y < -1) boid.position.y =  0.99;
+            if (boid.position.y >  1) boid.position.y = -0.99;
+            if (boid.position.z < -1) boid.position.z =  0.99;
+            if (boid.position.z >  1) boid.position.z = -0.99;
         }
+        */
 
-        for (const Boid& boid : crowd) {
-            glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f), boid.position);
-            glm::mat4 MVMatrix = ViewMatrix * ModelMatrix;
+        for (size_t i = 0; i < N; ++i) {
+            drawData[2*i] = crowd[i].position;
+            drawData[2*i+1] = crowd[i].direction;
+        }
+        glBufferData(GL_ARRAY_BUFFER, drawData.size()*sizeof(glm::vec3), drawData.data(), GL_DYNAMIC_DRAW);
+//            glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f), boid.position);
+            glm::mat4 MVMatrix = ViewMatrix;// * ModelMatrix;
             glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
-            glm::mat4 MVP = ProjMatrix * MVMatrix;
+            glm::mat4 VP = ProjMatrix * ViewMatrix;
 
             GLint locMVMatrix = glGetUniformLocation(renderProgram.getID(), "uMVMatrix");
             GLint locNormalMatrix = glGetUniformLocation(renderProgram.getID(), "uNormalMatrix");
@@ -138,16 +212,24 @@ int main() {
 
             glUniformMatrix4fv(locMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
             glUniformMatrix4fv(locNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
-            glUniformMatrix4fv(locMVPMatrix, 1, GL_FALSE, glm::value_ptr(MVP));
+            glUniformMatrix4fv(locMVPMatrix, 1, GL_FALSE, glm::value_ptr(VP));
 
-            glDrawArrays(GL_TRIANGLES, 0, sphereVertices.size());
-        }
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 18, N);
+//        glDrawArrays(GL_TRIANGLES, 0, 18);
 
         glfwSwapBuffers(window.handle);
     }
 
+    glDeleteBuffers(1, &boidsDisplacementVBO);
+    glDeleteBuffers(1, &singularBoidVBO);
+    glDeleteVertexArrays(1, &boidsVAO);
+
+    /*
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    */
 //    glfwTerminate();
     return 0;
 }
