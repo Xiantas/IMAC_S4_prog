@@ -177,6 +177,10 @@ int main() {
             boid.update(crowd); 
         }
 
+        bool darkenSpheres = maths::bernoulli(0.7); //Les boids ont plus souvent peur qu'il ne l'ont pas
+        glm::vec3 baseColor = glm::vec3(0.0, 1.0, 1.0); 
+        glm::vec3 darkColor = glm::vec3(1.0, 0.0, 0.0);  
+
         for (const Boid& boid : crowd) {
             glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f), boid.position);
             glm::mat4 MVMatrix = ViewMatrix * ModelMatrix;
@@ -186,13 +190,6 @@ int main() {
             GLint locMVMatrix = glGetUniformLocation(renderProgram.getID(), "uMVMatrix");
             GLint locNormalMatrix = glGetUniformLocation(renderProgram.getID(), "uNormalMatrix");
             GLint locMVPMatrix = glGetUniformLocation(renderProgram.getID(), "uMVPMatrix");
-
-            glUniformMatrix4fv(locMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-            glUniformMatrix4fv(locNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
-            glUniformMatrix4fv(locMVPMatrix, 1, GL_FALSE, glm::value_ptr(MVP));
-            
-            glDrawArrays(GL_TRIANGLES, 0, sphereVertices.size());
-
             if (displayCentralSphere) {
                 glBindVertexArray(centralSphereVAO);
                 glm::mat4 centralSphereModelMatrix = glm::mat4(1.0f);
@@ -200,8 +197,20 @@ int main() {
                 glm::mat4 centralSphereMVP = ProjMatrix * centralSphereMVMatrix;
                 glUniformMatrix4fv(locMVMatrix, 1, GL_FALSE, glm::value_ptr(centralSphereMVMatrix));
                 glUniformMatrix4fv(locMVPMatrix, 1, GL_FALSE, glm::value_ptr(centralSphereMVP));
+    
+
                 glDrawArrays(GL_TRIANGLES, 0, centralSphereVertices.size());
             }
+            glm::vec3 color = (darkenSpheres && displayCentralSphere) ? darkColor : baseColor;
+            GLint locColor = glGetUniformLocation(renderProgram.getID(), "uColor");
+            glUniform3fv(locColor, 1, glm::value_ptr(color));
+
+            glUniformMatrix4fv(locMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
+            glUniformMatrix4fv(locNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+            glUniformMatrix4fv(locMVPMatrix, 1, GL_FALSE, glm::value_ptr(MVP));
+            
+            glDrawArrays(GL_TRIANGLES, 0, sphereVertices.size());
+            
         }
          glfwSwapBuffers(window);
     }
