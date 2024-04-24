@@ -3,8 +3,10 @@
 #define MATHS_H
 
 namespace maths {
-    float randomUniformFloat(float min, float max);
+    double rand_0_1();
     bool bernoulli(double p);
+    double exponentialRandom(double theta);
+    double gammaRandom(int alpha, double theta);
 }
 
 #endif // MATHS_H

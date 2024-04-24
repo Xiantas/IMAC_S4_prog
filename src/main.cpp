@@ -71,6 +71,11 @@ void processInput(GLFWwindow* window) {
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
+//Utilisé dans la loi gamma
+int factorial(int n) {
+    return (n == 0) || (n == 1) ? 1 : n * factorial(n - 1);
+}
+
 int main() {
 
     if (!glfwInit()) {
@@ -105,7 +110,15 @@ int main() {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
 
-    std::vector<ShapeVertex> sphereVertices = createSphereVertices(0.15f, 2000, 20); 
+    //Loi Gamma 
+    int alpha = 2;  
+    double theta = 0.05;  
+
+    double gammaRadius = maths::gammaRandom(alpha, theta);
+    std::cout << "Radius sphere: " << gammaRadius << std::endl;
+
+    std::vector<ShapeVertex> sphereVertices = createSphereVertices(gammaRadius, 2000, 20); 
+    
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertex) * sphereVertices.size(), sphereVertices.data(), GL_STATIC_DRAW);
 
@@ -120,20 +133,19 @@ int main() {
     glEnable(GL_DEPTH_TEST);
     glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), 1.0f, 0.1f, 100.f);
 
-    std::vector<Boid> crowd(N);
+    std::vector<Boid> crowd(N); 
     for (Boid& boid : crowd) {
         glm::vec3 point = rng::pointInSphere(1.0f); 
-        float randomSpeed = maths::randomUniformFloat(0.005f, 0.015f);
+        double randomSpeed = 0.005 + (0.015 - 0.005) * maths::rand_0_1();
+        //std::cout << "Assigned Speed: " << randomSpeed << std::endl;
         boid = Boid{
             .position = point,
             .direction = point,
-            .speed = randomSpeed,
+            .speed = static_cast<float>(randomSpeed),
             .detectionRadius = 0.25f,
             .dodgeRadius = 0.13f,
         };
     }
-
-    GLint colorLoc = glGetUniformLocation(renderProgram.getID(), "boidColor");
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -159,14 +171,9 @@ int main() {
             glUniformMatrix4fv(locMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
             glUniformMatrix4fv(locNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
             glUniformMatrix4fv(locMVPMatrix, 1, GL_FALSE, glm::value_ptr(MVP));
-
-            glUniform3fv(colorLoc, 1, glm::value_ptr(boid.color));
             
             glDrawArrays(GL_TRIANGLES, 0, sphereVertices.size());
         }
-
-        GLint colorLoc = glGetUniformLocation(renderProgram.getID(), "boidColor");
-
         glfwSwapBuffers(window);
     }
 

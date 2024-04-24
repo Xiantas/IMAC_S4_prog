@@ -14,11 +14,9 @@ public :
 
     void update(std::span<Boid> crowd);
 
-    void updateColor(bool isTurtlePresent) {
-    if (isTurtlePresent && maths::bernoulli(0.5)) { // Proba de 50%
-            color = glm::vec3(0.5f, 0.5f, 1.0f); // Assombrir avec un ton bleu
-        } else {
-            color = glm::vec3(1.0f, 1.0f, 1.0f); // Couleur défaut blanche
+    void updateColor(bool isTurtlePresent, double p) {
+        if (isTurtlePresent && maths::bernoulli(p)) {
+            color = glm::vec3(0.5, 0.3, 0.7); // Changez à la couleur désirée
         }
     }
 };
