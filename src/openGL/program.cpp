@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <string>
+#include <vector>
 #include "file_utils.h"
 
 GLshader::GLshader(GLuint shaderType) : address(glCreateShader(shaderType)), shaderType(shaderType) {}
