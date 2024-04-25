@@ -29,7 +29,8 @@ void Mesh::loadObj(_fs::path const &path) {
 
     std::vector<VertexData> vertices;
 
-    auto newPath = file_utils::findPath(path);
+    // Converting path to string to avoid compilation error on Windows
+    std::string newPath = file_utils::findPath(path).string();
 
     // Charge le fichier objet
     const bool loaded = tinyobj::LoadObj(
@@ -72,7 +73,8 @@ void Mesh::loadObj(_fs::path const &path) {
 }
 
 void Mesh::loadTexture(_fs::path const &path) {
-    _fs::path newPath = file_utils::findPath(path);
+    // Converting path to string to avoid compilation error on Windows
+    std::string newPath = file_utils::findPath(path).string();
     int width, height, nbChannels;
     unsigned char *data = stbi_load(newPath.c_str(), &width, &height, &nbChannels, 0);
     if (data) {
