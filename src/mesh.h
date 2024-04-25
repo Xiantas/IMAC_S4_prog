@@ -8,9 +8,10 @@
 
 class Mesh {
 public:
-    Mesh();
+    Mesh() = delete;
+    Mesh(VaoType vaoType);
 
-    void loadFromFile(std::filesystem::path const &path);
+    void loadObj(std::filesystem::path const &path);
     void loadTexture(std::filesystem::path const &path);
 
 private:

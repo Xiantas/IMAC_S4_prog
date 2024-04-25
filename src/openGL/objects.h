@@ -6,6 +6,10 @@
 #include <optional>
 #include "vertexData.h"
 
+class GLvao;
+
+enum class VaoType { Classic, Instanced };
+
 class GLvbo {
 public:
     GLvbo();
@@ -19,14 +23,16 @@ public:
     auto getVertexCount() -> GLuint { return this->vertexCount; }
 
 private:
+    friend class GLvao;
+    GLvbo(bool);
+
     GLuint address;
     GLsizei vertexCount;
 };
 
-enum class VaoType { Classic, Instanced };
-
 class GLvao {
 public:
+    GLvao() = delete;
     GLvao(VaoType vaoType);
     GLvao(GLvao const &vao) = delete;
     GLvao(GLvao &&vao);

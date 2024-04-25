@@ -6,10 +6,16 @@
 #include <filesystem>
 #include "rendering.h"
 
-void Object3D::loadFromFile(std::filesystem::path const &path) {
-    this->mesh.loadFromFile(path);
+namespace _fs = std::filesystem;
+
+Object3D::Object3D(VaoType vaoType)
+    : mesh(vaoType)
+{}
+
+void Object3D::loadObj(_fs::path const &path) {
+    this->mesh.loadObj(path);
 }
 
-void Object3D::setProgram(std::filesystem::path const &path, Renderer &renderer) {
-    this->glProgramIndex = std::make_optional(renderer.getProgram(path));
+void Object3D::setProgram(_fs::path const &vert, _fs::path const &frag, Renderer &renderer) {
+    this->glProgramIndex = std::make_optional(renderer.getProgram(vert, frag));
 }

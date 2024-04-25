@@ -9,6 +9,15 @@ GLvbo::GLvbo() : vertexCount(0) {
     glGenBuffers(1, &this->address);
 }
 
+GLvbo::GLvbo(bool instanced)
+    : address(0)
+    , vertexCount(0)
+{
+    if (instanced) {
+        glGenBuffers(1, &this->address);
+    }
+}
+
 GLvbo::GLvbo(GLvbo &&vbo)
     : address(vbo.address)
 {
@@ -32,6 +41,7 @@ void GLvbo::bind() {
 
 GLvao::GLvao(VaoType vaoType)
     : vaoType(vaoType)
+    , vboInstance(vaoType == VaoType::Instanced)
 {
     glGenVertexArrays(1, &this->address);
     glBindVertexArray(this->address);

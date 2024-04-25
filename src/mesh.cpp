@@ -13,7 +13,9 @@
 
 namespace _fs = std::filesystem;
 
-void Mesh::loadFromFile(_fs::path const &path) {
+Mesh::Mesh(VaoType vaoType) : vao(vaoType) {}
+
+void Mesh::loadObj(_fs::path const &path) {
     tinyobj::attrib_t                attributs;
     std::vector<tinyobj::shape_t>    formes;
     std::vector<tinyobj::material_t> materiaux;

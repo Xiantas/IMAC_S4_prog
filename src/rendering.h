@@ -1,10 +1,12 @@
 #pragma once
 
-#include <vector>
 #include <openGL/program.h>
-#include <glm/glm.hpp>
-#include <tuple>
+
 #include <filesystem>
+#include <glm/glm.hpp>
+#include <optional>
+#include <tuple>
+#include <vector>
 
 class Camera {
 private:
@@ -17,12 +19,25 @@ private:
 class Renderer {
 public:
     Renderer();
-    Renderer(Renderer const &renderer) = delete;
-    Renderer(Renderer &&renderer) = delete;
+    Renderer(Renderer const& renderer) = delete;
+    Renderer(Renderer&& renderer) = delete;
 
-    auto isProgramLoaded(std::filesystem::path) -> bool;
+    auto isProgramLoaded(
+        std::filesystem::path const& vert,
+        std::filesystem::path const& frag
+    ) -> std::optional<size_t>;
+    auto getProgram(
+        std::filesystem::path const& vert,
+        std::filesystem::path const& frag
+    ) -> size_t;
+    void useProgram(size_t index);
 
     Camera camera;
+
 private:
-    std::vector<std::tuple<std::filesystem::path, GLprogram>> programs;
+    std::vector<std::tuple<
+        std::filesystem::path,
+        std::filesystem::path,
+        GLprogram>>
+        programs;
 };

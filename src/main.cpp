@@ -17,10 +17,13 @@
 #include "file_utils.h"
 #include "openGL/arrays.h" 
 #include "openGL/program.h"
+#include "object3D.h"
+#include "rendering.h"
 #include "random_utils.h"
 #include "window.h"
 
-constexpr size_t N = 100;
+
+constexpr size_t N = 500;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -51,6 +54,8 @@ int main() {
         .addShader(fsShader)
         .link();
     renderProgram.use();
+
+    Object3D boids(VaoType::Instanced);
 
     GLuint singularBoidVBO;
     {

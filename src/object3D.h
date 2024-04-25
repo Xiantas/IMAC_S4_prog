@@ -8,11 +8,15 @@
 
 class Object3D {
 public:
-    Object3D() {}
+    Object3D() = delete;
+    Object3D(VaoType vaoType);
 
-    void loadFromFile(std::filesystem::path const &path);
-    void setProgram(std::filesystem::path const &path);
-    void setProgram(std::filesystem::path const &path, Renderer &renderer);
+    void loadObj(std::filesystem::path const &path);
+    void loadTexture(std::filesystem::path const &path);
+    void setProgram(
+        std::filesystem::path const &vert,
+        std::filesystem::path const &frag,
+        Renderer &renderer);
 
 private:
     Mesh mesh;
