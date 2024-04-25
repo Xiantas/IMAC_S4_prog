@@ -85,9 +85,23 @@ void GLvao::setVboMain(std::span<VertexData> slice) {
     this->vboMain.setData(slice);
 }
 
-GLtexture::GLtexture() {
-    glGenTextures(1, &this->address);
+auto GLvao::getType() const -> VaoType {
+    return this->vaoType;
 }
+
+void GLvao::draw() const {
+    glBindVertexArray(this->address);
+    if (this->vaoType == VaoType::Classic) {
+        glDrawArrays(GL_TRIANGLES, 0, this->vboMain.getVertexCount());
+    } else {
+        glDrawArraysInstanced(
+            GL_TRIANGLES, 0, 
+            this->vboMain.getVertexCount(),
+            this->vboInstance.getVertexCount()/2);
+    }
+}
+
+GLtexture::GLtexture() : address(0) {}
 
 GLtexture::GLtexture(GLtexture &&texture)
     : address(texture.address)
@@ -95,11 +109,21 @@ GLtexture::GLtexture(GLtexture &&texture)
     texture.address = 0;
 }
 
-void GLtexture::setData(GLint width, GLint height, char const *data) {
+void GLtexture::setData(GLint width, GLint height, int nbChannels, unsigned char *data) {
+    glGenTextures(1, &this->address);
     this->bind();
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+    GLint format = nbChannels == 3 ? GL_RGB : GL_RGBA;
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-void GLtexture::bind() {
+void GLtexture::bind () const {
     glBindTexture(GL_TEXTURE_2D, this->address);
 }

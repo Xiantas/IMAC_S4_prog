@@ -3,6 +3,7 @@
 #include <openGL/program.h>
 #include <openGL/objects.h>
 #include <filesystem>
+#include "camera.h"
 
 #include <glm/glm.hpp>
 
@@ -13,8 +14,11 @@ public:
 
     void loadObj(std::filesystem::path const &path);
     void loadTexture(std::filesystem::path const &path);
+    void setTransform(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale);
+    void render(GLprogram const &renderProgram, glm::mat4 const &projM, glm::mat4 const &viewM) const;
 
 private:
     GLvao vao;
     GLtexture texture;
+    glm::mat4 modeleM;
 };

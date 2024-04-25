@@ -20,7 +20,7 @@ public:
     void setData(std::span<VertexData> slice);
     void bind();
 
-    auto getVertexCount() -> GLuint { return this->vertexCount; }
+    auto getVertexCount() const -> GLuint { return this->vertexCount; }
 
 private:
     friend class GLvao;
@@ -40,6 +40,8 @@ public:
 
     void setVboMain(std::span<VertexData> slice);
     void setVboInstance(std::span<glm::vec3> slice);
+    auto getType() const -> VaoType;
+    void draw() const;
 
 private:
     GLuint address;
@@ -56,8 +58,8 @@ public:
     GLtexture(GLtexture const &texture) = delete;
     GLtexture(GLtexture &&texture);
 
-    void setData(GLint width, GLint height, char const *data);
-    void bind();
+    void setData(GLint width, GLint height, int nbChannels, unsigned char *data);
+    void bind() const;
 
 private:
     GLuint address;

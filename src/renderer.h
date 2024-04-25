@@ -8,29 +8,23 @@
 #include <tuple>
 #include <vector>
 
-class Camera {
-private:
-    glm::vec3 pos;
-    glm::vec3 dir;
-
-    float angle;
-};
+#include "camera.h"
 
 class Renderer {
 public:
-    Renderer();
+    Renderer(Camera camera);
     Renderer(Renderer const& renderer) = delete;
     Renderer(Renderer&& renderer) = delete;
 
     auto isProgramLoaded(
         std::filesystem::path const& vert,
         std::filesystem::path const& frag
-    ) -> std::optional<size_t>;
-    auto getProgram(
+    ) const -> std::optional<size_t>;
+    auto getProgramIndex(
         std::filesystem::path const& vert,
         std::filesystem::path const& frag
     ) -> size_t;
-    void useProgram(size_t index);
+    auto getProgramRef(size_t index) const -> GLprogram const&;
 
     Camera camera;
 

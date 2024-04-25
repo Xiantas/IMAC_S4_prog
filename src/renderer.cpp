@@ -1,10 +1,17 @@
-#include "rendering.h"
+#include "renderer.h"
 
 #include "openGL/program.h"
 
 namespace _fs = std::filesystem;
 
-auto Renderer::isProgramLoaded(_fs::path const &vert, _fs::path const &frag) -> std::optional<size_t> {
+Renderer::Renderer(Camera camera)
+    : camera(camera)
+{}
+
+auto Renderer::isProgramLoaded(
+    _fs::path const &vert,
+    _fs::path const &frag
+) const -> std::optional<size_t> {
     for (size_t i = 0; i < this->programs.size(); ++i) {
         if (std::get<0>(this->programs[i]) == vert
             && std::get<1>(this->programs[i]) == frag)
@@ -16,7 +23,7 @@ auto Renderer::isProgramLoaded(_fs::path const &vert, _fs::path const &frag) -> 
     return {};
 }
 
-auto Renderer::getProgram(_fs::path const &vert, _fs::path const &frag) -> size_t {
+auto Renderer::getProgramIndex(_fs::path const &vert, _fs::path const &frag) -> size_t {
     auto val = this->isProgramLoaded(vert, frag);
     if (val) {
         return val.value();
@@ -35,6 +42,6 @@ auto Renderer::getProgram(_fs::path const &vert, _fs::path const &frag) -> size_
     }
 }
 
-void Renderer::useProgram(size_t index) {
-    std::get<2>(this->programs.at(index)).use();
+auto Renderer::getProgramRef(size_t index) const -> GLprogram const& {
+    return std::get<2>(this->programs.at(index));
 }
