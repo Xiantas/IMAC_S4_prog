@@ -19,6 +19,8 @@ public:
         std::filesystem::path const &frag
     ) -> Object3D&;
 
+    auto setTransform(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale) -> Object3D&;
+    void setInstanceData(std::span<glm::vec3> slice);
     void render(Renderer const &renderer);
 
 private:

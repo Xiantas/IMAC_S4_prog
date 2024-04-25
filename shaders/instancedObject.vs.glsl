@@ -12,6 +12,7 @@ uniform mat4 uNormalMatrix;
 
 out vec3 fragPosition;
 out vec3 fragNormal;
+out vec2 fragTexCoords;
 
 
 vec2 complexProduct(vec2 a, vec2 b) {
@@ -21,6 +22,7 @@ vec2 complexProduct(vec2 a, vec2 b) {
 void main() {
     fragPosition = vec3(uMVMatrix * vec4(aVertexPos, 1.0));
     fragNormal = aVertexNor;
+    fragTexCoords = aTexCoord;
 
 
     vec2 zRot = normalize(aBoidDir.xy);

@@ -46,7 +46,6 @@ public:
 private:
     GLuint address;
 
-
     VaoType vaoType;
     GLvbo vboMain;
     GLvbo vboInstance;

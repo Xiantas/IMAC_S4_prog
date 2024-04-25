@@ -18,7 +18,7 @@
 
 namespace _fs = std::filesystem;
 
-Mesh::Mesh(VaoType vaoType) : vao(vaoType) {}
+Mesh::Mesh(VaoType vaoType) : vao(vaoType), modelM(1.0) {}
 
 void Mesh::loadObj(_fs::path const &path) {
     tinyobj::attrib_t attribs;
@@ -85,15 +85,16 @@ void Mesh::loadTexture(_fs::path const &path) {
     stbi_image_free(data);
 }
 
-/*
 void Mesh::setTransform(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale) {
-        this->
+    glm::vec3 x(1.0, 0.0, 0.0), y(0.0, 1.0, 0.0), z(0.0, 0.0, 1.0);
+    this->modelM =
+        glm::translate(pos) *
+        glm::rotate(rot.z, z)*glm::rotate(rot.y, y)*glm::rotate(rot.x, x) *
+        glm::scale(scale);
 }
-*/
 
 void Mesh::render(GLprogram const &renderProgram, glm::mat4 const &projM, glm::mat4 const &viewM) const {
-    glm::mat4 modelM(1.0); // = glm::translate(glm::mat4(1.0f), boid.position);
-    glm::mat4 MVMatrix = viewM * modelM;
+    glm::mat4 MVMatrix = viewM * this->modelM;
     glm::mat4 normalM = glm::transpose(glm::inverse(MVMatrix));
     glm::mat4 MVP = projM * MVMatrix;
 
@@ -107,4 +108,8 @@ void Mesh::render(GLprogram const &renderProgram, glm::mat4 const &projM, glm::m
 
     this->texture.bind();
     this->vao.draw();
+}
+
+void Mesh::setInstanceData(std::span<glm::vec3> slice) {
+    this->vao.setVboInstance(slice);
 }

@@ -85,6 +85,12 @@ void GLvao::setVboMain(std::span<VertexData> slice) {
     this->vboMain.setData(slice);
 }
 
+void GLvao::setVboInstance(std::span<glm::vec3> slice) {
+    glBindBuffer(GL_ARRAY_BUFFER, this->vboInstance.address);
+    glBufferData(GL_ARRAY_BUFFER, slice.size()*sizeof(glm::vec3), slice.data(), GL_DYNAMIC_DRAW);
+    this->vboInstance.vertexCount = slice.size();
+}
+
 auto GLvao::getType() const -> VaoType {
     return this->vaoType;
 }

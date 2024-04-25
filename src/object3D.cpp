@@ -34,6 +34,16 @@ auto Object3D::setProgram(
     return *this;
 }
 
+auto Object3D::setTransform(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale) -> Object3D& {
+    this->mesh.setTransform(pos, rot, scale);
+
+    return *this;
+}
+
+void Object3D::setInstanceData(std::span<glm::vec3> slice) {
+    this->mesh.setInstanceData(slice);
+}
+
 void Object3D::render(Renderer const &renderer) {
     if (!this->glProgramIndex) {
         return;
