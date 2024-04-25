@@ -81,3 +81,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE exe_path)
 add_library(glad third_party/glad/src/glad.c)
 target_include_directories(glad PUBLIC third_party/glad/include)
 target_link_libraries(${PROJECT_NAME} PRIVATE glad)
+
+# ---Add tinyobjloader---
+target_include_directories(${PROJECT_NAME} PRIVATE third_party/tinyobjloader)
+target_include_directories(${PROJECT_NAME} PRIVATE third_party/stb_image)

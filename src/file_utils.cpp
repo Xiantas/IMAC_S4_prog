@@ -13,9 +13,9 @@
 namespace _fs = std::filesystem;
 
 namespace file_utils {
-auto read(_fs::path const &path) -> std::string {
 
-    //TODO on vérifie que dir()/path existe, sinon on prend juste path sinon dir/../path 
+auto findPath(_fs::path const &path) -> _fs::path {
+    // On vérifie que dir()/path existe, sinon on prend juste path sinon dir/../path 
     _fs::path finalPath;
     if (_fs::exists(exe_path::dir()/path)) {
         finalPath = exe_path::dir()/path;
@@ -30,6 +30,13 @@ auto read(_fs::path const &path) -> std::string {
     if (!_fs::is_regular_file(finalPath)) {
         throw std::runtime_error("This is not a directory: " + path.string());
     }
+
+    return finalPath;
+}
+
+auto read(_fs::path const &path) -> std::string {
+
+    _fs::path finalPath = findPath(path);
 
     std::ifstream input(finalPath.c_str());
     if(!input) {

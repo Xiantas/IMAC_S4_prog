@@ -12,7 +12,8 @@ GLshader::GLshader(GLuint shaderType)
     : address(glCreateShader(shaderType)), shaderType(shaderType) {}
 
 GLshader::GLshader(GLshader&& shader)
-    : address(shader.address), shaderType(shader.shaderType) {
+    : address(shader.address), shaderType(shader.shaderType)
+{
     shader.address = 0;
 }
 
@@ -74,10 +75,10 @@ void GLprogram::link() {
     }
 }
 
-void GLprogram::use() {
+void GLprogram::use() const {
     glUseProgram(this->address);
 }
 
-GLint GLprogram::getUniformLocation(const std::string& name) {
+GLint GLprogram::getUniformLocation(const std::string& name) const {
     return glGetUniformLocation(this->address, name.c_str());
 }
