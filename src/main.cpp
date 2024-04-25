@@ -20,35 +20,7 @@
 #include "random_utils.h"
 #include "window.h"
 
-constexpr size_t N = 1;
-
-//Sphère qui est moche mais on la remplacera de toute façon:
-struct ShapeVertex {
-    glm::vec3 position;
-    glm::vec3 normal;
-    glm::vec2 texCoords;
-};
-std::vector<ShapeVertex> createSphereVertices(float radius, unsigned int rings, unsigned int sectors) {
-    std::vector<ShapeVertex> vertices;
-    float const R = 1.0f / (float)(rings - 1);
-    float const S = 1.0f / (float)(sectors - 1);
-
-    for (int r = 0; r < rings; ++r) {
-        for (int s = 0; s < sectors; ++s) {
-            float const y = sin(-glm::pi<float>() / 2 + glm::pi<float>() * r * R);
-            float const x = cos(2 * glm::pi<float>() * s * S) * sin(glm::pi<float>() * r * R);
-            float const z = sin(2 * glm::pi<float>() * s * S) * sin(glm::pi<float>() * r * R);
-
-            ShapeVertex vertex;
-            vertex.position = glm::vec3(x, y, z) * radius;
-            vertex.normal = glm::normalize(vertex.position);
-            vertex.texCoords = glm::vec2(s * S, r * R);
-
-            vertices.push_back(vertex);
-        }
-    }
-    return vertices;
-}
+constexpr size_t N = 100;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -67,10 +39,6 @@ void processInput(GLFWwindow* window) {
 }
 
 int main() {
-
-//    glfwMakeContextCurrent(window.handle);
-//    glViewport(0, 0, 1000, 1000);
-
     Window window(1000, 1000, std::string("Machin"));
 
     GLshader vsShader(GL_VERTEX_SHADER), fsShader(GL_FRAGMENT_SHADER);
@@ -145,22 +113,6 @@ int main() {
 
     glBindVertexArray(0);
 
-    /*
-    std::vector<ShapeVertex> sphereVertices = createSphereVertices(0.15f, 2000, 20); 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertex) * sphereVertices.size(), sphereVertices.data(), GL_STATIC_DRAW);
-    */
-
-    /*
-    glBindVertexArray(VAO);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ShapeVertex), (void*)offsetof(ShapeVertex, position));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(ShapeVertex), (void*)offsetof(ShapeVertex, normal));
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(ShapeVertex), (void*)offsetof(ShapeVertex, texCoords));
-    */
-
     glEnable(GL_DEPTH_TEST);
     glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), 1.0f, 0.1f, 100.f);
 
@@ -168,11 +120,11 @@ int main() {
     for (Boid& boid : crowd) {
         glm::vec3 point = rng::pointInSphere(1.0f); 
         boid = Boid{
-            .position = point,
+            .position = 5.0f*point,
             .direction = point,
             .speed = 0.015,
-            .detectionRadius = 0.25f,
-            .dodgeRadius = 0.13f,
+            .detectionRadius = 3.0f,
+            .dodgeRadius = 2.0f,
         };
     }
 
@@ -184,17 +136,15 @@ int main() {
 
         glm::mat4 ViewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         
-        /*
         for (Boid& boid : crowd) {
             boid.update(crowd); 
-            if (boid.position.x < -1) boid.position.x =  0.99;
-            if (boid.position.x >  1) boid.position.x = -0.99;
-            if (boid.position.y < -1) boid.position.y =  0.99;
-            if (boid.position.y >  1) boid.position.y = -0.99;
-            if (boid.position.z < -1) boid.position.z =  0.99;
-            if (boid.position.z >  1) boid.position.z = -0.99;
+            if (boid.position.x < -5) boid.position.x =  4.99;
+            if (boid.position.x >  5) boid.position.x = -4.99;
+            if (boid.position.y < -5) boid.position.y =  4.99;
+            if (boid.position.y >  5) boid.position.y = -4.99;
+            if (boid.position.z < -5) boid.position.z =  4.99;
+            if (boid.position.z >  5) boid.position.z = -4.99;
         }
-        */
 
         for (size_t i = 0; i < N; ++i) {
             drawData[2*i] = crowd[i].position;
@@ -217,7 +167,6 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 18, N);
-//        glDrawArrays(GL_TRIANGLES, 0, 18);
 
         glfwSwapBuffers(window.handle);
     }
@@ -226,10 +175,5 @@ int main() {
     glDeleteBuffers(1, &singularBoidVBO);
     glDeleteVertexArrays(1, &boidsVAO);
 
-    /*
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    */
-//    glfwTerminate();
     return 0;
 }

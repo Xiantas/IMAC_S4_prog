@@ -40,6 +40,9 @@ Window::Window(int width, int height, std::string title)
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         exit(-1);
     }
+
+    glfwMakeContextCurrent(this->handle);
+    glViewport(0, 0, width, height);
     
 	glfwSetKeyCallback(this->handle, [] (GLFWwindow* window, int key, int, int action, int) {
         if (action == GLFW_PRESS) {
