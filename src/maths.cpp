@@ -19,11 +19,18 @@ namespace maths {
         return location + scale * tan(M_PI * (u - 0.5));
     }
     
-    double normalRandom(double mean, double stddev) {
-        double u1 = rand_0_1();
-        double u2 = rand_0_1();
-        double z0 = sqrt(-2.0 * log(u1)) * cos(2 * M_PI * u2);
-        return z0 * stddev + mean;
+    int sgn(double v) {
+        return (v < 0) ? -1 : (v > 0) ? 1 : 0;
+    }
+    double laplaceRandom(double mu, double b) {
+        double u = rand_0_1() - 0.5;
+        return mu - b * sgn(u) * log(1 - 2 * fabs(u));
+    }
+    std::string determineDaytime(double mu, double b) {
+        double hour = laplaceRandom(mu, b);
+        if (hour < 12) return "morning";
+        else if (hour < 18) return "afternoon";
+        else return "evening";
     }
 
     int poissonRandom(double lambda) {
@@ -36,14 +43,6 @@ namespace maths {
             p *= u;
         }
         return k - 1;
-    }
-
-    int binomialRandom(int n, double p) {
-        int x = 0;
-        for (int i = 0; i < n; i++) {
-            if (rand_0_1() < p) x++;
-        }
-        return x;
     }
 
     double exponentialRandom(double theta) {
