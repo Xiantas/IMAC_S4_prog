@@ -1,5 +1,6 @@
 #include <iostream>
 #include <random>
+
 #define M_PI 3.14159265358979323846
 
 namespace maths {
@@ -59,5 +60,5 @@ namespace maths {
         return sum;
     }
 
-
+    
 }   // namespace maths

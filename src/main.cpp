@@ -20,7 +20,7 @@
 #include "random_utils.h"
 #include "window.h"
 #include "maths.h"
-
+#include "MarkovChain.h"
 constexpr size_t N = 100;
 
 void onError(int error, const char* description) {
@@ -160,6 +160,13 @@ int main() {
             .detectionRadius = 0.25f,
             .dodgeRadius = 0.13f,
         };
+    }
+
+    //Markov Chain
+    maths::MarkovChain mc;
+    for (int i = 0; i < 10; i++) {
+        std::cout << "Current State: " << mc.getCurrentStateName() << std::endl;
+        mc.nextState();
     }
 
      while (!glfwWindowShouldClose(window)) {
