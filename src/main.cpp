@@ -157,8 +157,8 @@ int main() {
             .position = point,
             .direction = point,
             .speed = static_cast<float>(randomSpeed),
-            .detectionRadius = 0.25f,
-            .dodgeRadius = 0.13f,
+            .detectionRadius = 3.0f,
+            .dodgeRadius = 2.0f,
         };
     }
 
@@ -182,6 +182,12 @@ int main() {
         //std::cout << "Cauchy value: " << cauchyValue << std::endl;
         for (Boid& boid : crowd) {
             boid.update(crowd); 
+            if (boid.position.x < -4.5) boid.position.x =  4.49;
+            if (boid.position.x >  4.5) boid.position.x = -4.49;
+            if (boid.position.y < -4.5) boid.position.y =  4.49;
+            if (boid.position.y >  4.5) boid.position.y = -4.49;
+            if (boid.position.z < -4.5) boid.position.z =  4.49;
+            if (boid.position.z >  4.5) boid.position.z = -4.49;
         }
 
         //Loi Bernoulli
